@@ -1,0 +1,27 @@
+{
+  "name": "rpsbot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon ./bot.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Vovan41k/rpsbot.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Vovan41k/rpsbot/issues"
+  },
+  "homepage": "https://github.com/Vovan41k/rpsbot#readme",
+  "dependencies": {
+    "dotenv": "^16.0.3",
+    "node-telegram-bot-api": "^0.60.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.20"
+  }
+}
