@@ -1,47 +1,70 @@
 require('dotenv').config();
 const TelegramBot = require('node-telegram-bot-api');
-const { getRandomSign, getResult } = require('./lib/rps');
+const { getRandomSign, getResult, newGame, signs } = require('./lib/rps');
 
 
 const token = process.env.TOKEN;
 
-const bot = new TelegramBot(token, {polling: true});
+const bot = new TelegramBot(token, { polling: true });
 
-bot.onText(/\/start/, (msg, match) => {
-    bot.sendMessage(msg.chat.id, 'Ваш ход',
+const startGame = (chatId)=>{
+    bot.sendMessage(chatId, 'Ваш ход',
     {
         "reply_markup": {
             "inline_keyboard": [[
                 {
-                    text: '✊ rock',
+                    text: signs.rock,
                     callback_data: 't,rock',
                 },
                 {
-                    text: '✋ paper',
+                    text: signs.paper,
                     callback_data: 't,paper',
                 },
                 {
-                    text: '✌️ scissors',
+                    text: signs.scissors,
                     callback_data: 't,scissors',
                 },
             ]],
 
         },
     })
+
+}
+
+bot.onText(/\/start/, (msg, match) => {
+    startGame(msg.chat.id)
 });
-const score = [0,0]
+const score = [0, 0]
 bot.on('callback_query', (query) => {
     try {
         const chatId = query.from.id
         const [prefix] = query.data.split(',')
 
         if (prefix === 't') {
-            const [,choose] = query.data.split(',')
+            const [, choose] = query.data.split(',')
             const enemyChoose = getRandomSign()
             const [points, enemyPoints, info] = getResult(choose, enemyChoose)
-            bot.sendMessage(chatId, `Вы выбрали ${choose}. Я выбрал ${enemyChoose}`)
-            bot.sendMessage(chatId, info)
+            score[0] += points
+            score[1] += enemyPoints
+            bot.sendMessage(chatId, `Вы выбрали ${signs[choose]}
+Я выбрал ${signs[enemyChoose]}
+Результат: ${info}
+Счет: ${score.join(`:`)}
+`, {
+    "reply_markup": {
+        "inline_keyboard": [[
+            {
+                text: 'Новая игра',
+                callback_data: 'n,game'
+            }
+        ]],
+
+    },
+})
+        } else if(prefix==='n'){
+            startGame(chatId)
         }
+        
 
     } catch (error) {
         console.log(error)
